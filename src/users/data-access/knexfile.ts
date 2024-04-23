@@ -1,5 +1,4 @@
-import { knex, Knex } from "../node_modules/knex/types/index";
-// import type { Knex } from knex;
+import { knex, Knex } from 'knex';
 
 // Update with your config settings.
 

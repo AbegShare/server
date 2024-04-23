@@ -16,10 +16,10 @@ exports.up = function (knex) {
         table.boolean('verified').defaultTo(0);
         table.string('avatar_url');
         table.string('referal_code', 64).notNullable().unique();
-        table.string('user_disabled').defaultTo(0);
+        table.boolean('user_disabled').defaultTo(0);
         table.timestamp('created_at').notNullable().defaultTo(knex.fn.now())
         table.timestamp('modified_at').notNullable().defaultTo(knex.fn.now())
-        table.timestamp('last_active_at').defaultTo(knex.fn.now())
+        table.timestamp('last_active_at').notNullable().defaultTo(knex.fn.now())
         table.timestamp('default_account', 36).notNullable().references('id').inTable('account').onDelete('cascade')
 
     })

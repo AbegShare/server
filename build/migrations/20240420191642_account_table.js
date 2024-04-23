@@ -9,6 +9,9 @@ exports.up = function(knex) {
         table.string('account_name', 32).notNullable();
         table.string('account_plan', 32);
         table.string('payment_type', 32);
+        table.integer('amount');
+        table.integer('referal_bonus');
+        table.integer('bonus_amount');
         table.string('payment_customer_id', 64);
         table.string('payment_subscription_id', 64);
         table.string('payment_method_id', 64);
