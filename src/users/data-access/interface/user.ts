@@ -1,5 +1,5 @@
 interface User {
-    id: string,
+    id?: string,
     email: string,
     password?: string,
     first_name: string,
@@ -8,11 +8,11 @@ interface User {
     created_at?: string,
     modified_at?: string,
     last_login?: string,
-    role: string,
+    role?: string,
     verified?: boolean,
     avatar_url?: string,
     user_disabled?: boolean,
-    referal_code: string,
+    referal_code?: string,
     default_account_id?: string
 }
 
