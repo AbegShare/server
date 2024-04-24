@@ -6,6 +6,7 @@ import vine, { errors } from "@vinejs/vine";
 export async function create(req, res, next) {
     vine.convertEmptyStringsToNull = true;
     const data = req.body;
+    let output;
     const validateThisData = {
         email: data.email,
         password: data.password,
@@ -18,9 +19,8 @@ export async function create(req, res, next) {
     // validate user data
     try {
         const validator = vine.compile(userSchema);
-        const output = await validator.validate(validateThisData);
-        res.status(200).json(output);
-        console.log(output);
+        output = await validator.validate(validateThisData);
+        console.log("user details validated successfully");
     }
     catch (error) {
         if (error instanceof errors.E_VALIDATION_ERROR) {
@@ -28,7 +28,8 @@ export async function create(req, res, next) {
             console.log(error.messages);
         }
     }
+    // TODO create an account in db for user
     // TODO  check if there is a referal code
     // then save to db
-    // createUser(req.body)
+    // createUser(output)
 }
