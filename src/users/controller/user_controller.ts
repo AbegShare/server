@@ -41,7 +41,7 @@ export async function create(req:Request, res:Response, next: NextFunction){
     }
 
     // TODO create an account in db for user
-    createAccount({
+   const result = createAccount({
         account_type: 'basic',
         account_name: output?.first_name,
         account_plan: 'basic',
@@ -50,7 +50,7 @@ export async function create(req:Request, res:Response, next: NextFunction){
 
     // TODO  check if there is a referal code
 
-
+console.log(result)
     // then save to db
     // createUser(output)
 

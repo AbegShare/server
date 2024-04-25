@@ -1,3 +1,4 @@
+import { createAccount } from "../data-access/models/account.js";
 import { userSchema } from "../data-access/validation/user-validation.js";
 import vine, { errors } from "@vinejs/vine";
 /**
@@ -29,7 +30,14 @@ export async function create(req, res, next) {
         }
     }
     // TODO create an account in db for user
+    const result = createAccount({
+        account_type: 'basic',
+        account_name: output?.first_name,
+        account_plan: 'basic',
+        payment_type: 'basic',
+    });
     // TODO  check if there is a referal code
+    console.log(result);
     // then save to db
     // createUser(output)
 }

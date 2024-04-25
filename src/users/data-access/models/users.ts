@@ -1,5 +1,5 @@
 import { Knex, knex } from 'knex'
-import db from "../knexfile"
+import db from "../../../knexfile"
 import User from "../interface/user"
 import Account from "../interface/account"
 import { v4 as uuidv4 } from 'uuid'

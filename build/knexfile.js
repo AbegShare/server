@@ -1,24 +1,23 @@
-// import type { Knex } from knex;
 // Update with your config settings.
 const config = {
     development: {
-        client: "mysql2",
+        client: 'mysql2',
         connection: {
             host: '127.0.0.1',
             port: 3306,
-            user: 'your_database_user',
-            password: 'your_database_password',
-            database: 'myapp_test',
+            user: 'root',
+            password: 'my-secret-pw',
+            database: 'abegtest',
         },
     },
     staging: {
-        client: "mysql2",
+        client: 'mysql2',
         connection: {
             host: '127.0.0.1',
             port: 3306,
-            user: 'your_database_user',
-            password: 'your_database_password',
-            database: 'myapp_test',
+            user: 'root',
+            password: 'my-secret-pw',
+            database: 'abegtest',
         },
         pool: {
             min: 2,
@@ -29,13 +28,13 @@ const config = {
         }
     },
     production: {
-        client: "mysql2",
+        client: 'mysql2',
         connection: {
             host: '127.0.0.1',
             port: 3306,
-            user: 'your_database_user',
-            password: 'your_database_password',
-            database: 'myapp_test',
+            user: 'root',
+            password: 'my-secret-pw',
+            database: 'abegtest',
         },
         pool: {
             min: 2,
