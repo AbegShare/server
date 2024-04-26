@@ -1,9 +1,9 @@
 import knex from "knex";
 import { v4 as uuidv4 } from 'uuid';
 import config from '../../../knexfile.js';
-const db = knex(config.development);
+import 'dotenv/config';
+let db = knex(config[process.env.NODE_ENV || 'development']);
 export async function createAccount(accountDetails) {
-    console.log(config.development);
     const data = {
         id: uuidv4(),
         account_type: accountDetails.account_type,
@@ -14,5 +14,7 @@ export async function createAccount(accountDetails) {
         payment_subscription_id: accountDetails.payment_subscription_id,
         payment_method_id: accountDetails.payment_method_id,
     };
-    return await db("account").insert(data);
+    await db("account").insert(data);
+    return data;
 }
+// TODO get account by id

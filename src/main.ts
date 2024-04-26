@@ -8,6 +8,7 @@ const app = express()
 
 // middleware to parse json from req.body
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
 app.use(router)
 

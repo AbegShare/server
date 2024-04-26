@@ -4,7 +4,7 @@ interface User {
     password?: string,
     first_name: string,
     last_name: string,
-    phone_number: string,
+    phone_number: number,
     created_at?: string,
     modified_at?: string,
     last_login?: string,
