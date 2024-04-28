@@ -16,6 +16,7 @@ export async function create(req, res, next) {
         last_name: data.last_name,
         phone_number: data.phone_number,
         referal_code: data.referal_code,
+        role: 'owner'
     };
     // TODO check if email/user already exist
     try {
@@ -32,9 +33,10 @@ export async function create(req, res, next) {
         });
         // TODO  check if there is a referal code
         const userCreationResult = await createUser(validatedOutput, accountCreationResult);
+        // TODO send email verification
         res.status(200).json({
             status: "OK",
-            message: `${userCreationResult.first_name} created successfully`,
+            message: `${userCreationResult.email} created successfully`,
             data: userCreationResult
         });
     }

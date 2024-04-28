@@ -27,12 +27,13 @@ export async function createUser(userDetails, accountDetails) {
     // encrypt password
     const salt = await bcrypt.genSalt(13);
     data.password = await bcrypt.hash(passwordToString(), salt);
+    // set the account id
+    data.default_account_id = accountDetails.id;
     // insert into db
-    // await db("user").insert(data);
+    await db("user").insert(data);
     // delete the password from variable
     if (data.password) {
         delete data.password;
     }
-    data.default_account_id = accountDetails.id;
     return data;
 }

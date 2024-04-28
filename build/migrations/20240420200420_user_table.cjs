@@ -20,7 +20,7 @@ exports.up = function (knex) {
         table.timestamp('created_at').notNullable().defaultTo(knex.fn.now())
         table.timestamp('modified_at').notNullable().defaultTo(knex.fn.now())
         table.timestamp('last_active_at').notNullable().defaultTo(knex.fn.now())
-        table.string('default_account', 36).notNullable().references('id').inTable('account').onDelete('cascade')
+        table.string('default_account_id', 36).notNullable().references('id').inTable('account').onDelete('cascade')
 
     })
 
