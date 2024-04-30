@@ -1,9 +1,8 @@
 import 'dotenv/config'
 import jwt from 'jsonwebtoken'
 
-export function signJwt<T>(data:T){
+export function signJwt<T>(data: T, expireIn: any) {
 
-    let i = process.env.JWT_TOKEN_SECRET
+    return jwt.sign(data , process.env.JWT_TOKEN_SECRET!, expireIn)
 
-    jwt.sign({data}, i!)
 }

@@ -3,6 +3,7 @@ import { createUser } from "../data-access/models/users.js"
 import { createAccount } from "../data-access/models/account.js"
 import { userSchema } from "../data-access/validation/user-validation.js"
 import vine, { errors } from "@vinejs/vine"
+import { signJwt } from "../../util/jwt.js"
 
 /**
  * create a new user
@@ -47,6 +48,12 @@ export async function create(req: Request, res: Response, next: NextFunction) {
         const userCreationResult = await createUser(validatedOutput, accountCreationResult)
 
         // TODO send email verification
+        const i = signJwt({
+           name: "test"
+
+        },
+            '30min')
+        console.log(i)
 
         res.status(200).json({
             status: "OK",
