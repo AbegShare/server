@@ -1,8 +1,10 @@
 import 'dotenv/config'
 import jwt from 'jsonwebtoken'
 
-export function signJwt<T>(data: T, expireIn: any) {
+export function signJWT<T>(data: T, expire: any) {
+    return jwt.sign({payload: data}, process.env.JWT_TOKEN_SECRET!, {expiresIn: expire})
+}
 
-    return jwt.sign(data , process.env.JWT_TOKEN_SECRET!, expireIn)
-
+export  async function verifyJWT(token:string, secretKey:string){
+    return jwt.verify(token,secretKey)
 }
