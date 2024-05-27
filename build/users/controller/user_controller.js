@@ -1,8 +1,10 @@
 import { createUser } from "../data-access/models/users.js";
 import { createAccount } from "../data-access/models/account.js";
+import { createOTP } from "../data-access/models/opt.js";
 import { userSchema } from "../data-access/validation/user-validation.js";
 import vine, { errors } from "@vinejs/vine";
-import { signJwt } from "../../util/jwt.js";
+import { signJWT, verifyJWT } from "../../util/jwt.js";
+import transporter from "../../util/email.js";
 /**
  * create a new user
  */
@@ -34,11 +36,23 @@ export async function create(req, res, next) {
         });
         // TODO  check if there is a referal code
         const userCreationResult = await createUser(validatedOutput, accountCreationResult);
+        // TODO create OTP and save to db
+        console.log(`data when creating users ${JSON.stringify(userCreationResult)}`);
+        if (userCreationResult) {
+            createOTP('12345', userCreationResult.id);
+        }
         // TODO send email verification
-        const i = signJwt({
-            name: "test"
-        }, '30min');
+        const i = signJWT("test", '1h');
         console.log(i);
+        var mailOptions = {
+            from: '"Example Team" <undefined>',
+            to: 'wamiikechukwu@gmail.com',
+            subject: 'Test Email',
+            html: `Test email sent successfully with this token ${i}`,
+        };
+        transporter.sendMail(mailOptions);
+        const k = await verifyJWT(i, process.env.JWT_TOKEN_SECRET);
+        console.log(k);
         res.status(200).json({
             status: "OK",
             message: `${userCreationResult.email} created successfully`,
