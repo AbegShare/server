@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express"
 import { createUser } from "../data-access/models/users.js"
 import { createAccount } from "../data-access/models/account.js"
-import { createOTP } from "../data-access/models/opt.js"
+import { createOTP, getOTP } from "../data-access/models/opt.js"
 import { userSchema } from "../data-access/validation/user-validation.js"
 import vine, { errors } from "@vinejs/vine"
-import { signJWT, verifyJWT } from "../../util/jwt.js"
 import transporter from "../../util/email.js"
+import { generateUniqueOtp } from "../../util/opt.js"
 
 
 /**
@@ -50,29 +50,27 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
         const userCreationResult = await createUser(validatedOutput, accountCreationResult)
 
-        // TODO create OTP and save to db
-        console.log(`data when creating users ${JSON.stringify(userCreationResult)}`)
-
-        if(userCreationResult){
-            createOTP('12345',userCreationResult.id!)
+        // if user obj is empty, throw an error
+        if (!userCreationResult) {
+            throw new Error('user maynot have been create, response data is empty')
         }
 
+        // generate an OTP and save to db
+        let otp = await generateUniqueOtp(5)
 
-        // TODO send email verification
-        const i = signJWT("test", '1h')
-        console.log(i)
+        createOTP(otp, userCreationResult.id!)
 
-        var mailOptions = {
-            from: '"Example Team" <undefined>',
+        // send email verification
+        let mailOptions = {
+            from: '"Example Team" <wami@abegshare.com>',
             to: 'wamiikechukwu@gmail.com',
             subject: 'Test Email',
-            html: `Test email sent successfully with this token ${i}`,
+            html: `Test email sent successfully with this token ${otp}`,
         };
 
-        transporter.sendMail(mailOptions )
+        transporter.sendMail(mailOptions)
 
-       const  k = await verifyJWT(i, process.env.JWT_TOKEN_SECRET!)
-       console.log(k)
+
 
         res.status(200).json({
             status: "OK",

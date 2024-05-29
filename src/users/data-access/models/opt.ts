@@ -6,17 +6,36 @@ import 'dotenv/config'
 
 let db = knex(config[process.env.NODE_ENV || 'development']);
 
-export async function createOTP(generatedOTP: string, userId:string) {
+export async function createOTP(generatedOTP: string, userId: string) {
 
-    const data = {
-        id: uuidv4(),
-        OTP: generatedOTP,
-        user_id: userId
+    try {
+        const data = {
+            id: uuidv4(),
+            otp_code: generatedOTP,
+            user_id: userId
+        }
+
+        await db("otp").insert(data);
+
+        return data;
+
+    } catch (error) {
+        console.log(error)
+        return error
     }
 
-    await db("OTP").insert(data);
 
-    return data;
+}
+
+export async function getOTP(generatedOTP: string) {
+
+    // try {
+        return await db("otp").select().where('otp_code', generatedOTP)
+
+    // } catch (error) {
+    //     console.log(error)
+    //     return error
+    // }
 
 }
 
