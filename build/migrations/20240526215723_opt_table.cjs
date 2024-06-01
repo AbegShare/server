@@ -6,7 +6,7 @@
 exports.up = async function (knex) {
     return await knex.schema.createTable('otp', function (table) {
         table.specificType('id', 'char(36) primary key');
-        table.string('otp_code', 5).notNullable(); // OTP as a string of 5 characters
+        table.string('otp_code', 5).notNullable().unique(); // OTP as a string of 5 characters
         table.timestamp('created_at').notNullable().defaultTo(knex.fn.now()); // created_at with the current timestamp
         table.timestamp('expires_at').notNullable() // expires_at with current timestamp + 24 hours
         table.string('user_id', 36).notNullable().references('id').inTable('user').onDelete('cascade')
