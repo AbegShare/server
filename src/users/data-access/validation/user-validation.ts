@@ -1,6 +1,6 @@
 import vine from "@vinejs/vine";
 
-export const userSchema = vine.object({
+export const createUserSchema = vine.object({
     email:vine.string().email(),
     password: vine.string().minLength(8),
     first_name:vine.string(),

@@ -1,11 +1,13 @@
 import { createUser, getUserByEmail } from "../data-access/models/users.js";
 import { createAccount } from "../data-access/models/account.js";
 import { createOTP } from "../data-access/models/opt.js";
-import { userSchema } from "../data-access/validation/user-validation.js";
+import { createUserSchema } from "../data-access/validation/user-validation.js";
 import vine, { errors } from "@vinejs/vine";
 import transporter from "../../util/email.js";
 import { generateUniqueOtp } from "../../util/opt.js";
 import { generateUniqueReferralCode } from "../../util/referral.js";
+import bcrypt from 'bcrypt';
+import { signJWT } from "../../util/jwt.js";
 /**
  * create a new user
  */
@@ -23,7 +25,7 @@ export async function create(req, res, next) {
     };
     try {
         // validate user data
-        const validator = vine.compile(userSchema);
+        const validator = vine.compile(createUserSchema);
         validatedOutput = await validator.validate(validateThisData);
         console.log("user details validated successfully");
         // check if email/user already exist
@@ -77,5 +79,40 @@ export async function create(req, res, next) {
             res.status(500).json(error);
             console.log(error);
         }
+    }
+}
+/**
+ * sign in a user
+ */
+export async function get(req, res, next) {
+    try {
+        const data = req.body;
+        const isEmailValid = await getUserByEmail(data.email);
+        if (!isEmailValid.length) {
+            res.status(404).json({
+                status: 'Error',
+                message: 'User email not found'
+            });
+        }
+        const getHashedPassword = isEmailValid[0].password;
+        const comparePassword = bcrypt.compare(data.password, getHashedPassword);
+        if (!comparePassword) {
+            res.status(404).json({
+                status: 'Error',
+                message: 'incorrect email or password'
+            });
+        }
+        const token = signJWT({
+            role: isEmailValid[0].role,
+            id: isEmailValid[0].id,
+        }, '24hr');
+        res.status(200).json({
+            status: `${data.email} signed in successfully`,
+            message: token
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ status: 'FAILED', message: `${error}` });
     }
 }
