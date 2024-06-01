@@ -13,7 +13,7 @@ import 'dotenv/config'
 
 let db = knex(config[process.env.NODE_ENV || 'development']);
 
-export async function createUser(userDetails: User, accountDetails: Account) {
+export async function createUser(userDetails: User, accountDetails: Account, referralCode:string) {
     const data: User = {
         id: uuidv4(),
         email: userDetails.email,
@@ -21,7 +21,7 @@ export async function createUser(userDetails: User, accountDetails: Account) {
         last_name: userDetails.last_name,
         phone_number: userDetails.phone_number,
         role: userDetails.role,
-        referal_code: userDetails.referal_code
+        referral_code: referralCode
     }
 
     function passwordToString(): string {
@@ -42,6 +42,7 @@ export async function createUser(userDetails: User, accountDetails: Account) {
     data.default_account_id = accountDetails.id
 
     // insert into db
+    // TODO uncomment when you want to launch
     await db("user").insert(data);
 
     // delete the password from variable
@@ -51,5 +52,13 @@ export async function createUser(userDetails: User, accountDetails: Account) {
 
     return data
 
+}
+
+export async function getUserByEmail(userEmail:string) {
+    return await db('user').select().where('email', userEmail)
+}
+
+export async function getUserByReferralCode(userReferralCode:string) {
+    return await db('user').select().where('referral_code', userReferralCode)
 }
 

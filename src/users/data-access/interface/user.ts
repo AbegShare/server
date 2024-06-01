@@ -12,7 +12,7 @@ interface User {
     verified?: boolean,
     avatar_url?: string,
     user_disabled?: boolean,
-    referal_code?: string,
+    referral_code?: string,
     default_account_id?: string
 }
 
