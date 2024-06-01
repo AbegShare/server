@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from "express"
-import { createUser } from "../data-access/models/users.js"
+import { createUser, getUserByEmail } from "../data-access/models/users.js"
 import { createAccount } from "../data-access/models/account.js"
 import { createOTP, getOTP } from "../data-access/models/opt.js"
 import { userSchema } from "../data-access/validation/user-validation.js"
 import vine, { errors } from "@vinejs/vine"
 import transporter from "../../util/email.js"
 import { generateUniqueOtp } from "../../util/opt.js"
+import { generateUniqueReferralCode } from "../../util/referral.js"
 
 
 /**
@@ -26,17 +27,26 @@ export async function create(req: Request, res: Response, next: NextFunction) {
         first_name: data.first_name,
         last_name: data.last_name,
         phone_number: data.phone_number,
-        referal_code: data.referal_code,
         role: 'owner'
     }
-
-    // TODO check if email/user already exist
 
     try {
         // validate user data
         const validator = vine.compile(userSchema)
         validatedOutput = await validator.validate(validateThisData)
         console.log("user details validated successfully")
+
+        // check if email/user already exist
+        const doesUserHaveAnEmail = await getUserByEmail(validatedOutput.email)
+
+        if (doesUserHaveAnEmail.length) {
+            return res.status(409).json({
+                code: '409',
+                status: "Conflict",
+                message: `email address already in use`,
+                data: validateThisData.email
+            })
+        }
 
         // create an account in db for user
         const accountCreationResult = await createAccount({
@@ -46,9 +56,10 @@ export async function create(req: Request, res: Response, next: NextFunction) {
             payment_type: 'basic',
         })
 
-        // TODO  check if there is a referal code
+        //generate a unique referal code
+        const referralCode = await generateUniqueReferralCode(5)
 
-        const userCreationResult = await createUser(validatedOutput, accountCreationResult)
+        const userCreationResult = await createUser(validatedOutput, accountCreationResult, referralCode)
 
         // if user obj is empty, throw an error
         if (!userCreationResult) {
@@ -72,7 +83,8 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
 
 
-        res.status(200).json({
+        return res.status(200).json({
+            code: '200',
             status: "OK",
             message: `${userCreationResult.email} created successfully`,
             data: userCreationResult

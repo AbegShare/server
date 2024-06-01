@@ -1,10 +1,11 @@
-import { createUser } from "../data-access/models/users.js";
+import { createUser, getUserByEmail } from "../data-access/models/users.js";
 import { createAccount } from "../data-access/models/account.js";
 import { createOTP } from "../data-access/models/opt.js";
 import { userSchema } from "../data-access/validation/user-validation.js";
 import vine, { errors } from "@vinejs/vine";
 import transporter from "../../util/email.js";
 import { generateUniqueOtp } from "../../util/opt.js";
+import { generateUniqueReferralCode } from "../../util/referral.js";
 /**
  * create a new user
  */
@@ -18,15 +19,23 @@ export async function create(req, res, next) {
         first_name: data.first_name,
         last_name: data.last_name,
         phone_number: data.phone_number,
-        referal_code: data.referal_code,
         role: 'owner'
     };
-    // TODO check if email/user already exist
     try {
         // validate user data
         const validator = vine.compile(userSchema);
         validatedOutput = await validator.validate(validateThisData);
         console.log("user details validated successfully");
+        // check if email/user already exist
+        const doesUserHaveAnEmail = await getUserByEmail(validatedOutput.email);
+        if (doesUserHaveAnEmail.length) {
+            return res.status(409).json({
+                code: '409',
+                status: "Conflict",
+                message: `email address already in use`,
+                data: validateThisData.email
+            });
+        }
         // create an account in db for user
         const accountCreationResult = await createAccount({
             account_type: 'basic',
@@ -34,8 +43,9 @@ export async function create(req, res, next) {
             account_plan: 'basic',
             payment_type: 'basic',
         });
-        // TODO  check if there is a referal code
-        const userCreationResult = await createUser(validatedOutput, accountCreationResult);
+        //generate a unique referal code
+        const referralCode = await generateUniqueReferralCode(5);
+        const userCreationResult = await createUser(validatedOutput, accountCreationResult, referralCode);
         // if user obj is empty, throw an error
         if (!userCreationResult) {
             throw new Error('user maynot have been create, response data is empty');
@@ -51,7 +61,8 @@ export async function create(req, res, next) {
             html: `Test email sent successfully with this token ${otp}`,
         };
         transporter.sendMail(mailOptions);
-        res.status(200).json({
+        return res.status(200).json({
+            code: '200',
             status: "OK",
             message: `${userCreationResult.email} created successfully`,
             data: userCreationResult
