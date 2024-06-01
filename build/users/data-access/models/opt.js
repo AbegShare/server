@@ -19,10 +19,5 @@ export async function createOTP(generatedOTP, userId) {
     }
 }
 export async function getOTP(generatedOTP) {
-    // try {
     return await db("otp").select().where('otp_code', generatedOTP);
-    // } catch (error) {
-    //     console.log(error)
-    //     return error
-    // }
 }

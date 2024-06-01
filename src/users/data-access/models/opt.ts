@@ -29,13 +29,7 @@ export async function createOTP(generatedOTP: string, userId: string) {
 
 export async function getOTP(generatedOTP: string) {
 
-    // try {
-        return await db("otp").select().where('otp_code', generatedOTP)
-
-    // } catch (error) {
-    //     console.log(error)
-    //     return error
-    // }
+    return await db("otp").select().where('otp_code', generatedOTP)
 
 }
 
