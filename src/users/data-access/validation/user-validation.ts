@@ -6,6 +6,5 @@ export const userSchema = vine.object({
     first_name:vine.string(),
     last_name:vine.string(),
     phone_number:vine.number(),
-    referal_code:vine.string(),
     role:vine.string(),
 })

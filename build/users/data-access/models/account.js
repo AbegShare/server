@@ -14,6 +14,7 @@ export async function createAccount(accountDetails) {
         payment_subscription_id: accountDetails.payment_subscription_id,
         payment_method_id: accountDetails.payment_method_id,
     };
+    //  TODO uncomment before publishing to production
     await db("account").insert(data);
     return data;
 }
